@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>EtenRennen — Track order</title>
+    <meta name="description" content="Track your EtenRennen order status from kitchen to delivery." />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900;1000&display=swap" rel="stylesheet" />
+
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+
+  <body data-page="track">
+    <header class="navbar">
+      <div class="container">
+        <div class="nav-inner">
+          <a class="brand" href="index.html" aria-label="EtenRennen Home">
+            <img class="brand-logo" src="images/logo.png" alt="EtenRennen logo" />
+            <span>
+              <span class="brand-name">EtenRennen</span>
+              <span class="brand-tag">Where Speed Meets Flavor</span>
+            </span>
+          </a>
+
+          <nav class="nav-links" aria-label="Primary">
+            <a href="index.html" data-nav="home">Home</a>
+            <a href="menu.html" data-nav="menu">Menu</a>
+            <a href="track-order.html" data-nav="track">Track</a>
+            <a href="cart.html" data-nav="cart">Cart</a>
+            <a href="login.html" data-nav="login">Login</a>
+          </nav>
+
+          <div class="nav-actions">
+            <a class="cart-chip" href="cart.html" aria-label="Open cart">
+              <span aria-hidden="true">🛒</span>
+              <b>Cart</b>
+              <span class="cart-count" id="cartCount">0</span>
+            </a>
+
+            <button class="hamburger" id="hamburgerBtn" aria-label="Open menu" type="button">
+              <span aria-hidden="true"></span>
+            </button>
+          </div>
+        </div>
+
+        <nav class="mobile-nav" id="mobileNav" aria-label="Mobile">
+          <a href="index.html" data-nav="home">Home</a>
+          <a href="menu.html" data-nav="menu">Menu</a>
+          <a href="track-order.html" data-nav="track">Track</a>
+          <a href="cart.html" data-nav="cart">Cart</a>
+          <a href="login.html" data-nav="login">Login</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="section" id="trackPageRoot">
+      <div class="container">
+        <div class="section-title">
+          <div>
+            <h2>Track your order</h2>
+            <p id="trackSubtitle">Sign in to see live status. We refresh every 45 seconds while this tab is open.</p>
+          </div>
+          <button type="button" class="btn btn-ghost" id="trackRefreshBtn">Refresh now</button>
+        </div>
+
+        <div id="trackNeedLogin" class="panel" hidden>
+          <div class="panel-b">
+            <p><b>Log in</b> to track your orders.</p>
+            <div class="form-actions">
+              <a class="btn btn-primary" href="login.html?next=track-order.html">Go to login</a>
+              <a class="btn btn-ghost" href="menu.html">Browse menu</a>
+            </div>
+          </div>
+        </div>
+
+        <div id="trackContent" hidden>
+          <div class="track-layout">
+            <aside class="panel track-sidebar" aria-label="Your orders">
+              <div class="panel-h">
+                <h2>Your orders</h2>
+                <small style="color:#5b6570; font-weight:850">Newest first</small>
+              </div>
+              <div class="panel-b track-order-list" id="trackOrderList"></div>
+            </aside>
+
+            <div class="panel track-detail" id="trackDetailPanel">
+              <div class="panel-h">
+                <h2 id="trackDetailTitle">Select an order</h2>
+                <small id="trackDetailMeta" style="color:#5b6570; font-weight:850"></small>
+              </div>
+              <div class="panel-b" id="trackDetailBody">
+                <p class="track-placeholder">Choose an order from the list to see status and items.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <div class="container">
+        <div class="footer-inner">
+          <div>
+            <b>EtenRennen</b>
+            <small>Status updates when the restaurant changes your order in the admin dashboard.</small>
+          </div>
+          <div>
+            <b>Hungry?</b>
+            <small><a href="menu.html">Order more</a></small>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <div id="toast" hidden style="
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(23,33,43,0.12);
+      background: rgba(255,255,255,0.92);
+      box-shadow: 0 18px 34px rgba(23,33,43,0.12);
+      font-weight: 900;
+      transition: opacity 200ms ease;
+      z-index: 80;
+    "></div>
+
+    <script src="js/script.js"></script>
+  </body>
+</html>

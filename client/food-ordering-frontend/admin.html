@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>EtenRennen — Admin dashboard</title>
+    <meta name="description" content="Restaurant admin: overview, menu catalog, orders and fulfillment." />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900;1000&display=swap" rel="stylesheet" />
+
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+
+  <body data-page="admin">
+    <header class="navbar">
+      <div class="container">
+        <div class="nav-inner">
+          <a class="brand" href="index.html" aria-label="EtenRennen Home">
+            <img class="brand-logo" src="images/logo.png" alt="EtenRennen logo" />
+            <span>
+              <span class="brand-name">EtenRennen</span>
+              <span class="brand-tag">Admin</span>
+            </span>
+          </a>
+
+          <nav class="nav-links" aria-label="Primary">
+            <a href="index.html" data-nav="home">Home</a>
+            <a href="menu.html" data-nav="menu">Menu</a>
+            <a href="track-order.html" data-nav="track">Track</a>
+            <a href="cart.html" data-nav="cart">Cart</a>
+            <a href="admin.html" data-nav="admin">Admin</a>
+            <a href="login.html" data-nav="login">Login</a>
+          </nav>
+
+          <div class="nav-actions">
+            <a class="cart-chip" href="cart.html" aria-label="Open cart">
+              <span aria-hidden="true">🛒</span>
+              <b>Cart</b>
+              <span class="cart-count" id="cartCount">0</span>
+            </a>
+            <button type="button" class="btn btn-ghost btn-sm" id="adminLogoutBtn" style="display:none">Logout</button>
+            <button class="hamburger" id="hamburgerBtn" aria-label="Open menu" type="button">
+              <span aria-hidden="true"></span>
+            </button>
+          </div>
+        </div>
+
+        <nav class="mobile-nav" id="mobileNav" aria-label="Mobile">
+          <a href="index.html" data-nav="home">Home</a>
+          <a href="menu.html" data-nav="menu">Menu</a>
+          <a href="track-order.html" data-nav="track">Track</a>
+          <a href="cart.html" data-nav="cart">Cart</a>
+          <a href="admin.html" data-nav="admin">Admin</a>
+          <a href="login.html" data-nav="login">Login</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="adminDashboard" class="section admin-page">
+      <div class="container">
+        <div class="section-title admin-dash-head">
+          <div>
+            <h2>Admin dashboard</h2>
+            <p id="adminGreeting">Checking session…</p>
+          </div>
+          <div class="admin-dash-actions">
+            <button type="button" class="btn btn-ghost" id="adminRefreshBtn">Refresh data</button>
+          </div>
+        </div>
+
+        <div class="admin-tabs" role="tablist" aria-label="Dashboard sections">
+          <button type="button" class="admin-tab active" id="adminTabOverview" role="tab" aria-selected="true">Overview</button>
+          <button type="button" class="admin-tab" id="adminTabFoods" role="tab" aria-selected="false">Menu management</button>
+          <button type="button" class="admin-tab" id="adminTabOrders" role="tab" aria-selected="false">Orders &amp; fulfillment</button>
+        </div>
+
+        <!-- Overview: stats + what this dashboard does -->
+        <div id="adminOverviewPanel" class="admin-panels" role="tabpanel">
+          <div class="admin-stats-grid" id="adminStatsGrid" aria-live="polite">
+            <article class="admin-stat-card">
+              <span class="admin-stat-label">Menu items</span>
+              <strong class="admin-stat-value" id="statMenuCount">—</strong>
+              <span class="admin-stat-hint">Live catalog</span>
+            </article>
+            <article class="admin-stat-card">
+              <span class="admin-stat-label">Total orders</span>
+              <strong class="admin-stat-value" id="statOrderCount">—</strong>
+              <span class="admin-stat-hint">All time</span>
+            </article>
+            <article class="admin-stat-card admin-stat-accent">
+              <span class="admin-stat-label">Revenue (paid)</span>
+              <strong class="admin-stat-value" id="statRevenue">—</strong>
+              <span class="admin-stat-hint">COD + Razorpay when PAID</span>
+            </article>
+            <article class="admin-stat-card admin-stat-warn">
+              <span class="admin-stat-label">Pending payment</span>
+              <strong class="admin-stat-value" id="statPendingPay">—</strong>
+              <span class="admin-stat-hint">Razorpay not completed</span>
+            </article>
+          </div>
+
+          <div class="admin-two-col">
+            <div class="panel">
+              <div class="panel-h">
+                <h2>What you can do here</h2>
+              </div>
+              <div class="panel-b">
+                <ul class="admin-feature-list">
+                  <li><b>Menu management</b> — Add new dishes, edit prices and details, or remove items. Slugs must match storefront cart IDs (e.g. <code>crash-burger</code>).</li>
+                  <li><b>Order oversight</b> — See every customer order: items, totals, payment method and payment status.</li>
+                  <li><b>Fulfillment workflow</b> — Move orders through Received → Preparing → Out for delivery → Delivered, or mark Cancelled.</li>
+                  <li><b>Access control</b> — Only accounts with the <b>admin</b> role (from <code>npm run seed:admin</code>) can use this dashboard; the API checks your JWT.</li>
+                </ul>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-h">
+                <h2>Fulfillment pipeline</h2>
+              </div>
+              <div class="panel-b">
+                <dl class="admin-pipeline-dl" id="adminPipelineDl"></dl>
+                <p class="admin-muted-note">Counts update when you click <b>Refresh data</b> or after saving an order.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Menu -->
+        <div id="adminFoodsPanel" class="admin-panels" hidden role="tabpanel">
+          <div class="panel">
+            <div class="panel-h">
+              <h2>Catalog</h2>
+              <small style="color:#5b6570; font-weight:850">Slug = cart / checkout ID. Keep names and prices aligned with the public menu.</small>
+            </div>
+            <div class="panel-b" style="overflow-x:auto">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Slug</th>
+                    <th>Price</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="adminFoodsBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-h">
+              <h2 id="adminFormTitle">Add or edit menu item</h2>
+            </div>
+            <div class="panel-b">
+              <form id="adminFoodForm" class="admin-form-grid">
+                <input type="hidden" id="adminFoodId" value="" />
+                <div class="field">
+                  <label for="adminFoodSlug">Slug</label>
+                  <input id="adminFoodSlug" type="text" required placeholder="e.g. jungle-bowl" autocomplete="off" />
+                </div>
+                <div class="field">
+                  <label for="adminFoodName">Name</label>
+                  <input id="adminFoodName" type="text" required placeholder="Display name" />
+                </div>
+                <div class="field">
+                  <label for="adminFoodPrice">Price (INR)</label>
+                  <input id="adminFoodPrice" type="number" min="0" step="1" required />
+                </div>
+                <div class="field">
+                  <label for="adminFoodImage">Image path (optional)</label>
+                  <input id="adminFoodImage" type="text" placeholder="images/food-burger.jpg" />
+                </div>
+                <div class="field" style="grid-column: 1 / -1">
+                  <label for="adminFoodDesc">Description (optional)</label>
+                  <textarea id="adminFoodDesc" rows="2" placeholder="Short description"></textarea>
+                </div>
+                <div class="form-actions" style="grid-column: 1 / -1">
+                  <button type="submit" class="btn btn-primary" id="adminFoodSubmitBtn">Add item</button>
+                  <button type="button" class="btn btn-ghost" id="adminFoodCancelBtn">Clear form</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Orders -->
+        <div id="adminOrdersPanel" class="admin-panels" hidden role="tabpanel">
+          <div class="panel">
+            <div class="panel-h">
+              <h2>All orders</h2>
+              <small style="color:#5b6570; font-weight:850">Filter below, then set fulfillment and click <b>Save</b> per row.</small>
+            </div>
+            <div class="panel-b">
+              <div class="admin-order-filters" aria-label="Order filters">
+                <div class="field" style="margin:0; min-width:200px">
+                  <label for="adminOrderFilterFulfillment">Fulfillment</label>
+                  <select id="adminOrderFilterFulfillment" class="admin-select">
+                    <option value="">All statuses</option>
+                    <option value="RECEIVED">Received</option>
+                    <option value="PREPARING">Preparing</option>
+                    <option value="OUT_FOR_DELIVERY">Out for delivery</option>
+                    <option value="DELIVERED">Delivered</option>
+                    <option value="CANCELLED">Cancelled</option>
+                  </select>
+                </div>
+                <div class="field" style="margin:0; flex:1; min-width:200px">
+                  <label for="adminOrderSearch">Search customer</label>
+                  <input id="adminOrderSearch" type="search" placeholder="Name or email…" autocomplete="off" />
+                </div>
+                <div class="field" style="margin:0; min-width:180px">
+                  <label for="adminOrderFilterPayment">Payment</label>
+                  <select id="adminOrderFilterPayment" class="admin-select">
+                    <option value="">All</option>
+                    <option value="PENDING">Pending only</option>
+                    <option value="PAID">Paid only</option>
+                  </select>
+                </div>
+              </div>
+              <div style="height:12px"></div>
+              <div style="overflow-x:auto">
+                <table class="admin-table">
+                  <thead>
+                    <tr>
+                      <th>Order</th>
+                      <th>When</th>
+                      <th>Customer</th>
+                      <th>Delivery</th>
+                      <th>Items</th>
+                      <th>Total</th>
+                      <th>Payment</th>
+                      <th>Fulfillment</th>
+                    </tr>
+                  </thead>
+                  <tbody id="adminOrdersBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <div class="container">
+        <div class="footer-inner">
+          <div>
+            <b>EtenRennen Admin</b>
+            <small>Create an admin with <code>npm run seed:admin</code> in the backend folder.</small>
+          </div>
+          <div>
+            <b>Storefront</b>
+            <small><a href="menu.html">View menu</a></small>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <div id="toast" hidden style="
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(23,33,43,0.12);
+      background: rgba(255,255,255,0.92);
+      box-shadow: 0 18px 34px rgba(23,33,43,0.12);
+      font-weight: 900;
+      transition: opacity 200ms ease;
+      z-index: 80;
+    "></div>
+
+    <script src="js/script.js"></script>
+  </body>
+</html>
